@@ -72,7 +72,9 @@ gobuster dir -u 10.10.77.26 -w /usr/share/wordlists/dirbuster/directory-list-2.3
 
 Interesting findings:
 
-- /login.php: Login page (needs password)  ![login_page](images/login_page.png)
+- /login.php: Login page (needs password)
+
+![login_page](images/login_page.png)
 
 - /robots.txt: Contains `Wubbalubbadubdub` (potential password)
 
@@ -86,12 +88,14 @@ Interesting findings:
  - **Password**: `Wubbalubbadubdub`
 
 We successfully authenticate at `/login.php`.
+
 ![logged_in](images/logged_in.png)
 
 
 ## Post-Login Exploration
 
 Once logged in, we land on a "Command Panel" interface allowing command execution. Attempting to visit other tabs redirects to `/denied.php`
+
 ![denied_page](images/denied_page.png)
 
 We can try a command to list files in the current directory:
@@ -115,6 +119,7 @@ drwxrwxr-x 2 ubuntu ubuntu 4096 Feb 10  2019 assets
 ```
 
 We can see the first ingredient in the `Sup3rS3cretPickl3Ingred.txt` file, but we can't read it's content using `cat` or `vim` because these commands are disabled:
+
 ![disabled_command](images/disabled_command.png)
 
 We can pivot to `strings` - a command that extracts human-readable strings from files:
