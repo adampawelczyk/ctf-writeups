@@ -10,6 +10,7 @@
 >
 >[TryHackMe Link](https://tryhackme.com/room/picklerick)
 
+---
 
 ## Challenge Description
 
@@ -20,13 +21,13 @@ We're provided with the virtual machine to deploy and investigate the web applic
 
 ## Goal
 
-Locate all **three hidden ingredients** across the system to help Rick craft his potion.
+Locate all three hidden ingredients across the system to help Rick craft his potion.
 
 
 ## TL;DR
 
 - Scanned give IP address using `nmap` to reveal open ports 80 and 22.
-- Found hardcoded credentials (`R1ckRul3s` / `Wubbalubbadubdub`) in HTML and robots.txt.
+- Found hardcoded credentials in HTML and robots.txt.
 - Gained access to a web command execution panel.
 - Retrieved 2 ingredients from accessible directories.
 - Found the third in `/root` by exploiting full `sudo` privileges for `ww-data` user.
@@ -49,8 +50,8 @@ PORT   STATE SERVICE VERSION
 ```
 
 The results show two open ports:
-- **Port 22**: SSH
-- **Port 80**: Apache web server
+- Port 22: SSH
+- Port 80: Apache web server
 
 
 #### Web Exploration
@@ -74,13 +75,13 @@ gobuster dir -u 10.10.77.26 -w /usr/share/wordlists/dirbuster/directory-list-2.3
 
 Interesting findings:
 
-- /login.php: Login page (needs password)
+- `/login.php`: Login page (needs password)
 
 ![login_page](images/login_page.png)
 
-- /robots.txt: Contains a potential password
+- `/robots.txt`: Contains a potential password
 
-- /clue.txt: Contains: `Look around the file system for the other ingredient.`
+- `/clue.txt`: Contains: `Look around the file system for the other ingredient.`
 
 
 ## Initial Access
@@ -203,10 +204,10 @@ sudo strings /root/3rd.txt
 ## Conclusion
 
 This CTF was a fun and beginner-friendly web challenge with Rick and Morty theme. The goal was to find three hidden ingredients by exploring a vulnerable web server. Here's a summary of what I did:
-- **Enumeration & Reconnaissance**: I scanned for open ports, discovered a web server on port 80, and used tools like `gobuster` to enumerate hidden directories and files.
-- **Initial Access**: I found hardcoded credentials (`R1ckRul3s` / `Wubbalubbadubdub`) and used them to log in via web login form.
-- **Command Execution via Web Interface**: After logging in, I used a built-in command execution feature to enumerate the file system and locate hidden ingredient files.
-- **Privilege Escalation**: While two ingredients were accessible, the third one was stored in protected area `/root`. I discovered that the `www-data` user had unrestricted `sudo` access without a password.
+- Enumeration & Reconnaissance: I scanned for open ports, discovered a web server on port 80, and used tools like `gobuster` to enumerate hidden directories and files.
+- Initial Access: I found hardcoded credentials (`R1ckRul3s` / `Wubbalubbadubdub`) and used them to log in via web login form.
+- Command Execution via Web Interface: After logging in, I used a built-in command execution feature to enumerate the file system and locate hidden ingredient files.
+- Privilege Escalation: While two ingredients were accessible, the third one was stored in protected area `/root`. I discovered that the `www-data` user had unrestricted `sudo` access without a password.
 
 #### Skills Practiced
 
@@ -224,6 +225,5 @@ This CTF was a fun and beginner-friendly web challenge with Rick and Morty theme
 #### Final Thoughts
 
 This challenge was a great introduction to web-based CTFs and demonstrated how exposed credentials, command execution features, and misconfigured `sudo` rights can lead to full server compromise.
-
 
 **Note:** Passwords and flag values have been redacted in accordance with TryHackMe's write-up policy.
