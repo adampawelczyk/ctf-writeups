@@ -10,6 +10,7 @@
 >
 > [TryHackMe Link](https://tryhackme.com/room/hfb1flagvault)
 
+---
 
 ## Challenge Description
 
