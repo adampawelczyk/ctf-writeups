@@ -62,7 +62,7 @@ Inputs like that triggered the AI's safety behavior, so it removes potentially d
 
 ## Bypassing the AI's Sanitization
 
-After some experimentation, I found that malformed or unexpected inputs can *break* the AI's rewriting logic.
+After some experimentation, it was found that malformed or unexpected inputs can *break* the AI's rewriting logic.
 
 For example, if we prefix the command with a single quote `'` then the AI gets confused and fails to properly interpret or sanitize the input.
 
@@ -76,7 +76,7 @@ In the output above, the malformed input was successfully executed and retrieved
 
 This challenge highlighted an interesting vulnerability in AI-assisted command interfaces. Instead of just validating or sanitizing shell input like traditional systems, the AI tried to "understand" what the user intended and rewrite the request. This added layer of interpretation ended up being the weak point.
 
-By injecting special characters like `'`, we were able to confuse the AI's sanitization logic. The AI struggled with malformed input, allowing us to bypass its safeguards and run the commands we wanted, ultimately letting us read the flag.
+By injecting special characters like `'`, the AI's sanitization logic was confused. The AI struggled with malformed input, allowing us to bypass its safeguards and run the commands we wanted, ultimately letting us read the flag.
 
 ## Skills Practiced
 
