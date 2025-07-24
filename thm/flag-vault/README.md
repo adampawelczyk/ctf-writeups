@@ -14,7 +14,7 @@
 
 ## Challenge Description
 
-Cipher asked me to create the most secure vault for flags, so I created a vault that cannot be accessed. You don't believe me? Well, here is the code with the password hardcoded. Not that you can do much with it anymore.
+> Cipher asked me to create the most secure vault for flags, so I created a vault that cannot be accessed. You don't believe me? Well, here is the code with the password hardcoded. Not that you can do much with it anymore.
 
 We're provided with the source code for a C-based login system. According to the challenge description, the password is hardcoded, but the input for it is commented out.
 
@@ -37,7 +37,7 @@ Bypass the login mechanism and retrieve the flag.
 
 We are given the C source code. Here's a breakdown of the most critical part:
 
-#### Vulnerable login logic:
+### Vulnerable login logic:
 
 ```c
 char password[100] = "";
@@ -58,7 +58,7 @@ else{
 }
 ```
 
-#### Key Observations:
+### Key Observations:
 
 - Password prompt is commented out, meaning password remains an empty string.
 - `gets(username)` is used - a dangerous function that doesn't check bounds.
@@ -102,12 +102,12 @@ This script:
 
 ## Exploitation Output
 
-Upon executing the exploit code we get our flag:
+Upon executing the exploit code, the flag is retrieved:
 
 ![flag](images/flag.png)
 
 
-#### Why is the Padding 101 Bytes?
+### Why is the Padding 101 Bytes?
 
 After writing the 10-character username and a null terminator (11 bytes total), we expected the remaining 89 bytes (of the 100-byte buffer) to end right at the boundary.
 
@@ -132,19 +132,19 @@ Total: **112 bytes**, which aligns with our observed working exploit.
 
 The challenge showcased a classic example of insecure coding practices in C using `gets()` without bounds checking and leaving critical logic in place even when input is removed.
 
-#### Skills Practiced
+## Skills Practiced
 
 - Manual code review and vulnerability analysis.
 - Understanding stack layout and memory buffer overflows.
 - Writing custom exploits using `pwntools`.
 
-#### Mitigations
+## Mitigations
 
 - Never use `gets()` - it's unsafe. Use `fgets()` or other bounded alternatives.
 - Never store passwords in plaintext or hardcode them into binaries.
 - Always validate input length and use secure memory handling practices.
 
-#### Final Thoughts
+## Final Thoughts
 
 Although the password prompt was disabled, the actual authentication logic remained, making the system vulnerable to a buffer overflow exploit. This challenge was a fun and simple exercise in binary exploitation and reverse engineering fundamentals.
 
