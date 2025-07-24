@@ -4,7 +4,7 @@
 >
 > Date: 2025.07.10
 >
-> Category: Binary Exploitation>
+> Category: Binary Exploitation
 >
 > Difficulty: Easy
 >
@@ -14,8 +14,7 @@
 
 ## Challenge Description
 
-> How did you do that? No worries. I'll adjust a couple of lines of code so you won't be able to get the flag anymore.
-> This time, for real. Here's the source code once again.
+> How did you do that? No worries. I'll adjust a couple of lines of code so you won't be able to get the flag anymore. This time, for real. Here's the source code once again.
 
 Looks like ByteReaper wasn't too happy with us getting the flag last time. In this follow-up to the "Flag Vault" challenge, the developer claims to have fixed the vulnerability and made the flag inaccessible. Naturally, our job is to prove him wrong, again.
 
@@ -33,7 +32,7 @@ Find and exploit a vulnerability in the updated code to retrieve the flag.
 
 ## Source Code Analysis
 
-Here's the updated part of the code that caught my attention:
+Here's the updated part of the code that stands out:
 
 ```c
 void print_flag(char *username){
@@ -51,7 +50,7 @@ void print_flag(char *username){
 }
 ```
 
-### Observations:
+### Key Observations:
 
 - The flag is still being read into memory from `flag.txt`, but the line that prints it is commented out.
 - The `username` input is passed directly into `printf()` without a format string - a format string vulnerability.
@@ -95,7 +94,7 @@ This script:
 
 ## Exploitation Output
 
-Here's what I got upon executing the script:
+The script output revealed the following result:
 
 ![result.png](images/result.png)
 
@@ -111,13 +110,13 @@ The `flag` variable, despite not being printed directly, still lives on the stac
 
 This was an example of a format string bug. Even though the flag wasn't directly printed anymore, the vulnerability allowed us to leak it from memory anyway.
 
-### Skills Practiced
+## Skills Practiced
 
 - Format string exploitation.
 - Brute-forcing positional arguments.
 - Using `pwntools` to automate and streamline exploitation.
 
-### Mitigations
+## Mitigations
 
 - Never use user input directly in `printf()`. Always use a format string like `printf("%s", username);`.
 - Be cautious even when hiding or commenting out code - data still in memory can still be leaked.
