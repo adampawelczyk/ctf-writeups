@@ -84,6 +84,12 @@ By injecting special characters like `'`, we were able to confuse the AI's sanit
 - Input sanitization bypass.
 - AI prompt manipulation.
 
+## Mitigations
+
+- Avoid AI command rewriting for security-critical actions by using deterministic parsing and predefined rules.
+- Implement a strict allowlist to only permit safe commands and known arguments.
+- Sanitize inputs to correctly escape or remove shell meta-characters.
+
 ## Final Thoughts
 
 What makes this challenge particularly interesting is that it shows how AI-based systems can introduce new risks. As AI tools become more common for interpreting or generating user input, it's easy to forget that these systems are still prone to unexpected behavior, especially when dealing with complex input like shell commands.
