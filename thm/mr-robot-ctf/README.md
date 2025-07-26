@@ -14,9 +14,11 @@
 
 ## Challenge Description
 
+> Can you root this Mr. Robot styled machine? This is a virtual machine meant for beginners/intermediate users. There are 3 hidden keys located on the machine, can you find them?
+
 This Mr. Robot-themed challenge tasks us with compromising a virtual machine modeled after the *fsociety* universe. The objective is to find three hidden keys located on the system.
 
-We're provided with the virtual machine to deploy and investigate, hosted at: `10.10.202.58`
+The virtual machine for deployment and investigation is hosted at: `10.10.202.58`
 
 
 ## Goal
@@ -26,15 +28,15 @@ Locate all three hidden keys.
 
 ## TL;DR
 
-- Discovered ports 22, 80, 443 using `nmap`.
-- Found first flag in `robots.txt`
-- Found credentials in `license.txt`.
-- Logged into WordPress admin panel.
-- Gained a reverse shell via theme edit.
-- Found second flag inside the `robot` home directory.
-- Switched to robot user after cracking MD5 password and retrieved the second flag.
-- Escalated privileges using `nmap` SUID binary.
-- Retrieved the third flag.
+- Ports 22, 80, 443 were discovered using `nmap`.
+- The first flag was found in `robots.txt`
+- Credentials were located in `license.txt`.
+- Access was gained to the WordPress admin panel.
+- A reverse shell was gained via theme edit.
+- The second flag was found inside the `robot` home directory.
+- The `robot` user was accessed after cracking the MD5 password and the second flag was retrieved.
+- Privileges were escalated using the `nmap` SUID binary.
+- The third flag was retrieved.
 
 
 ## Reconnaissance
@@ -79,27 +81,26 @@ This reveals several interesting finds:
 - `/login`: Leads to a WordPress login portal.
 - `/license.txt`: Contains a hidden base64 encoded string.
 - `/robots.txt`: Lists two files:
-    - `fsocity.dic` - dictionary file containing presumably usernames and passwords.
-    - `key-1-of-3.txt` - file containing the first flag.
+    - `fsocity.dic`: Dictionary file containing presumably usernames and passwords.
+    - `key-1-of-3.txt`: File containing the first flag.
 
 The flag file is accessible via http://10.10.202.58/key-1-of-3.txt
 
 ### Credential Discovery
 
-Inspecting `license.txt`, the following base64-encoded string is found: `ZWxsaW90OkVSMjgtMDY1Mgo=`. Decoding it via [CyberChef](https://gchq.github.io/CyberChef) reveals a credential pair containing username and password.
+Inspecting `license.txt`, the following base64-encoded string was found: `ZWxsaW90OkVSMjgtMDY1Mgo=`. Decoding it via [CyberChef](https://gchq.github.io/CyberChef) reveals a credential pair containing username and password.
 
 ![Hidden Credentials](images/hidden_credentials.png)
-
 
 ## Exploitation
 
 ### Gaining Access to WordPress
 
-Logging into WordPress is successful using the discovered credentials . Though no flags are directly visible in the dashboard, the ability to edit theme files provides an excellent attack vector.
+Logging into WordPress is successful using the discovered credentials. Though no flags are directly visible in the dashboard, the ability to edit theme files provides an excellent attack vector.
 
 ### Reverse Shell Setup
 
-The active theme, such as twentyfifteen, is selected and the `404.php` file is modified to include a PHP reverse shell payload generated from [revshells](https://www.revshells.com/).
+The active theme, such as `twentyfifteen`, is selected and the `404.php` file is modified to include a PHP reverse shell payload generated from [revshells](https://www.revshells.com/).
 
 ![Theme Editor](images/theme_editor.png)
 
@@ -111,10 +112,9 @@ The next step is to start a listener on the attacking machine:
 nc -lvnp 4343
 ```
 
-To trigger the reverse shell, navigate to:
+The reverse shell can be triggered by navigating to:
 
 `http://10.10.202.58/wp-content/themes/twentyfifteen/404.php`
-
 
 ## Post-Exploitation
 
@@ -147,7 +147,7 @@ Results:
 cat /home/robot/password.raw-md5
 ```
 
-An MD5 hash of `robot's` password is obtained, which can crack using [CrackStation](https://crackstation.net/)
+An MD5 hash of `robot's` password is obtained, which can be cracked using [CrackStation](https://crackstation.net/)
 
 ![Crack Station](images/crack_station.png)
 
@@ -227,13 +227,7 @@ cat /root/key-3-of-3.txt
 
 ## Conclusion
 
-This was a cleverly crafted Mr. Robot-themed CTF, with a strong emphasis on realistic enumeration and privilege escalation. Here's what I did:
-
-- Enumeration & Reconnaissance: Discovered useful paths (`robots.txt`, `license.txt`) and base64-encoded credentials.
-- Web Application Exploitation: Logged into WordPress as admin, edited a theme to execute a PHP reverse shell.
-- Lateral Movement: Switched users after cracking MD5 password.
-- Privilege Escalation: Used an SUID-enabled nmap binary to escalate to `root`.
-- Capture Flags: Successfully retrieved all 3 hidden keys.
+This CTF, inspired by Mr. Robot, effectively simulated real-world exploitation techniques, with a focus on enumeration, privilege escalation, and web application exploitation. Through careful reconnaissance, crucial paths and credentials were discovered, leading to successful exploitation of the WordPress admin panel. After gaining initial access, user switching and privilege escalation were achieved using common techniques such as cracking MD5 hash and leveraging and SUID-enabled binary. Ultimately, the challenge demonstrated a comprehensive workflow from reconnaissance to privilege escalation, culminating in the retrieval of all three flags.
 
 ### Skills Practiced
 
