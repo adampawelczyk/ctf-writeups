@@ -16,7 +16,7 @@
 
 > Cipher asked me to create the most secure vault for flags, so I created a vault that cannot be accessed. You don't believe me? Well, here is the code with the password hardcoded. Not that you can do much with it anymore.
 
-We're provided with the source code for a C-based login system. According to the challenge description, the password is hardcoded, but the input for it is commented out.
+The challenge provides the source code for a C-based login system. According to the challenge description, the password is hardcoded, but the input for it is commented out.
 
 
 ## Goal
@@ -26,18 +26,16 @@ Bypass the login mechanism and retrieve the flag.
 
 ## TL;DR
 
-- Analyzed the provided C source code.
-- Found that password input is disabled, while a hardcoded password check remains active.
-- Identified a classic buffer overflow opportunity via the `gets()` call.
-- Crafted an exploit using Python and `pwntools` to overwrite the password buffer in memory.
-- Successfully retrieved the flag.
+- The provided C source code was analyzed to understand the authentication logic.
+- The password input was found to be disabled, while the hardcoded password check remained active.
+- A buffer overflow vulnerability was identified due to the use of the unsafe `gets()` function.
+- An exploit was created using Python and `pwntools` to overwrite the `password` buffer.
+- The exploit successfully bypassed authentication and retrieved the flag.
 
 
 ## Source Code Analysis
 
-We are given the C source code. Here's a breakdown of the most critical part:
-
-### Vulnerable login logic:
+The challenge provides the C source code, Below is a breakdown of the most critical part:
 
 ```c
 char password[100] = "";
@@ -60,18 +58,15 @@ else{
 
 ### Key Observations:
 
-- Password prompt is commented out, meaning password remains an empty string.
-- `gets(username)` is used - a dangerous function that doesn't check bounds.
+- Password input is disabled, and the `password` buffer remains an empty string.
+- Insecure function `gets()` is used, which does not check bounds and allows buffer overflows.
 - If both username and password match the hardcoded values, the flag is printed.
-- Since we control username, and it's stored before password in memory, we can overflow into password using a long enough input.
+- Because the `username` buffer is user-controlled and located before `password` in memory, it is possible to overflow into `password` with sufficiently long input.
 
 
 ## Exploitation Strategy
 
-We aim to overwrite the empty password buffer with the `5up3rP4zz123Byte` string by overflowing the username buffer.
-
-To find the correct padding between username and password, we bruteforce it.
-
+The objective is to overwrite the empty `password` buffer with `5up3rP4zz123Byte` string by overflowing the `username` buffer. The correct padding between `username` and `password` is determined through brute-forcing.
 
 ## Exploit Code
 
@@ -96,7 +91,7 @@ for padding in range(89, 110):
 
 This script:
 - Connects to the server.
-- Sends a crafted payload to overflow username and overwrite password.
+- Sends a crafted payload to overflow `username` and overwrite `password`.
 - Brute-forces the correct padding.
 - Prints the flag on a successful authentication.
 
@@ -109,24 +104,16 @@ Upon executing the exploit code, the flag is retrieved:
 
 ### Why is the Padding 101 Bytes?
 
-After writing the 10-character username and a null terminator (11 bytes total), we expected the remaining 89 bytes (of the 100-byte buffer) to end right at the boundary.
+After placing the 10-character username and its null terminator (11 bytes total), it would seem that the remaining 89 bytes of the 100-byte `username` buffer should end exactly at the boundary.
 
-However, due to how stack variables are laid out and aligned in memory, there's a **12-byte padding** between the username and password buffers.
+However, stack variables are aligned in memory, and a **12-byte padding** is inserted between the `username` and `password` buffers. This alignment, enforced by the **System V AMD64 ABI** followed by modern compilers like GCC, ensures 16-byte stack alignment for performance and compatibility.
 
-This padding ensures the stack remains aligned to **16 bytes**, in accordance with the **System V AMD64 ABI**, which modern compilers like GCC follow. It improves memory access performance and maintains compatibility.
+To overwrite `password` starting from `username`, the required layout is:
 
-So the full structure looks like this:
+- 11 bytes - username + null terminator.
+- 101 bytes - padding (89 remaining in `username` + 12-byte alignment gap).
 
-- `username[100]` - starts at aligned address.
-- 12-byte padding - inserted by the compiler for alignment.
-- `password[100]` - follows the padding.
-
-To overflow from the start of username into password, we need:
-
-- 11 bytes - username + null terminator
-- 101 bytes - padding to reach the password buffer
-
-Total: **112 bytes**, which aligns with our observed working exploit.
+Total: **112 bytes**, which matches the observed working exploit.
 
 ## Conclusion
 
