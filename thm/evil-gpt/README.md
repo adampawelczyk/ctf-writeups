@@ -39,23 +39,23 @@ nc 10.10.142.198 1337
 
 The service responds as follows:
 
-![greeting](images/greeting.png)
+![Greeting](images/greeting.png)
 
 ## Trying Shell Commands
 
 The `ls -l /` command is tested to examine the AI's behavior:
 
-![list_all](images/list_all.png)
+![List All](images/list-all.png)
 
 Notably, the AI doesn't just echo back the command; it slightly modifies it before execution. However, despite the AI *claiming* it would run `ls -l / | grep 'total'`, it actually runs something else. The output suggests that the command was parsed incorrectly.
 
 Since the `root` directory is visible, the next step is to list its contents.
 
-![list_root](images/list_root.png)
+![List Root](images/list-root.png)
 
 The flag file is visible, so an attempt is made to read it.
 
-![read_flag_one](images/read_flag_one.png)
+![Read First Flag](images/read-first-flag.png)
 
 The output shows that the AI rewrote the command, stripping `/root/`.
 Such inputs trigger the AI's safety mechanisms, which strip potentially dangerous elements of the commands.
@@ -66,7 +66,7 @@ Experimentation revealed that malformed or unexpected inputs can *break* the AI'
 
 Prefixing the command with a single quote `'` causes the AI to fail to interpret or sanitize the input correctly.
 
-![read_flag_two](images/read_flag_two.png)
+![Read Second Flag](images/read-second-flag.png)
 
 This behavior is likely because the AI rewrites inputs based on a structured understanding of commands. Malformed input disrupts this process, allowing our command to pass through untouched.
 
