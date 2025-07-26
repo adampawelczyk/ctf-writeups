@@ -61,7 +61,7 @@ PORT    STATE SERVICE  VERSION
 
 Navigating to http://10.10.202.58 reveals a minimal interface - just a prompt allowing predefined commands. After experimenting, nothing useful was discovered from this interface.
 
-![Main Page](images/main_page.png)
+![Main Page](images/main-page.png)
 
 The next step is to enumerate potential hidden directories and files.
 
@@ -87,7 +87,7 @@ The flag file is accessible via http://10.10.202.58/key-1-of-3.txt
 
 Inspecting `license.txt`, the following base64-encoded string was found: `ZWxsaW90OkVSMjgtMDY1Mgo=`. Decoding it via [CyberChef](https://gchq.github.io/CyberChef) reveals a credential pair containing username and password.
 
-![Hidden Credentials](images/hidden_credentials.png)
+![Hidden Credentials](images/hidden-credentials.png)
 
 ## Exploitation
 
@@ -99,7 +99,7 @@ Logging into WordPress is successful using the discovered credentials. Though no
 
 The active theme, such as `twentyfifteen`, is selected and the `404.php` file is modified to include a PHP reverse shell payload generated from [revshells](https://www.revshells.com/).
 
-![Theme Editor](images/theme_editor.png)
+![Theme Editor](images/theme-editor.png)
 
 `404.php` is modified, but any PHP file in the selected theme would have worked as long as it's editable via the WordPress dashboard and directly accessible in the browser.
 
@@ -146,7 +146,7 @@ cat /home/robot/password.raw-md5
 
 An MD5 hash of `robot's` password is obtained, which can be cracked using [CrackStation](https://crackstation.net/)
 
-![Crack Station](images/crack_station.png)
+![Crack Station](images/crack-station.png)
 
 After cracking the hash, switching to `robot` allows reading the second flag:
 
