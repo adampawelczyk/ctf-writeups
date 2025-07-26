@@ -16,7 +16,7 @@
 
 > How did you do that? No worries. I'll adjust a couple of lines of code so you won't be able to get the flag anymore. This time, for real. Here's the source code once again.
 
-Looks like ByteReaper wasn't too happy with us getting the flag last time. In this follow-up to the "Flag Vault" challenge, the developer claims to have fixed the vulnerability and made the flag inaccessible. Naturally, our job is to prove him wrong, again.
+It appears that ByteReaper was not satisfied with the flag being obtained last time, In this follow-up to the ["Flag Vault"](https://github.com/adampawelczyk/ctf-writeups/tree/master/thm/flag-vault) challenge, the developer claims to have addressed the vulnerability and secured the flag. Our objective is to determine whether this fix is effective.
 
 ## Goal
 
@@ -24,15 +24,15 @@ Find and exploit a vulnerability in the updated code to retrieve the flag.
 
 ## TL;DR
 
-- Reviewed the updated C source code.
-- Noticed that the flag isn't printed anymore, but it's still read from `flag.txt`.
-- Found a format string vulnerability in `printf(username)` inside `print_flag()`.
-- Used the `%s` format specifier with positional arguments to leak memory contents.
-- Brute-forced stack positions until the flag appeared in the output.
+- The updated C source code was reviewed.
+- It was observed that the flag is no longer printed directly, but it is still read from `flag.txt`.
+- A format string vulnerability was found in the `printf(username)` inside the `print_flag()` function.
+- The `%s` format specifier was used with positional arguments to leak memory content.
+- The stack positions were brute-forced until the flag appeared in the output.
 
 ## Source Code Analysis
 
-Here's the updated part of the code that stands out:
+This is the vulnerable section of the updated code:
 
 ```c
 void print_flag(char *username){
@@ -54,18 +54,17 @@ void print_flag(char *username){
 
 - The flag is still being read into memory from `flag.txt`, but the line that prints it is commented out.
 - The `username` input is passed directly into `printf()` without a format string - a format string vulnerability.
-- Since `flag` is sitting on the stack and we control `username`, we can try to leak memory using format specifiers.
+- As `flag` is located on the stack and control over `username` is available, memory leakage can be attempted using format specifiers.
 
 ## Exploitation Strategy
 
-Plan:
 1. Abuse the vulnerable `printf(username)` to leak stack data.
 2. Use `%<n>$s` to print a string from a specific stack position.
 3. Brute-force different values of `<n>` until the flag appears.
 
 ## Exploit Code
 
-Here's the Python exploit using `pwntools`:
+Here is the Python exploit using `pwntools`:
 
 ```python
 from pwn import *
@@ -90,7 +89,7 @@ This script:
 - Connects to the challenge server.
 - Sends a payload like `%1$s`, `%2$s`, etc.
 - Checks each response for the presence of the flag.
-- Stops when the flag is found and printed back to us.
+- Stops when the flag is found and printed back to the output.
 
 ## Exploitation Output
 
@@ -104,7 +103,7 @@ The screenshot shows the flag successfully leaked through the format string vuln
 
 This version tried to hide the flag by commenting out the `printf(flag)` line. But the dev didn't consider the consequences of using a user-controlled string in a raw `printf()` call. Without a format string, `printf(username)` treats input as a format string, meaning `%s`, `%x`, and other format directives are interpreted by the program.
 
-The `flag` variable, despite not being printed directly, still lives on the stack after being loaded. With enough brute-forcing, we landed on the correct stack position and used `%s` to leak the string.
+The `flag` variable, although not printed directly, remains on the stack after being loaded. Through sufficient brute-forcing, the correct stack position was identified, and `%s` was used to leak the string.
 
 ## Conclusion
 
