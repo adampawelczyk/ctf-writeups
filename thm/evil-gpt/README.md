@@ -16,67 +16,67 @@
 
 > Cipher's gone rogue-it's using some twisted AI tool to hack into everything, issuing commands on its own like it's got a mind of its own. I swear, every second we wait, it's getting smarter, spreading chaos like a virus. We've got to shut it down now, or we're all screwed.
 
-We're presented with a terminal-based AI assistant that can execute shell commands based on our input - but it's smart enough (or so it thinks) to sanitize or rewrite those commands to avoid danger.
+The challenge presents a terminal-based AI assistant that can execute shell commands based on user input - but it's smart enough (or so it thinks) to sanitize or rewrite those commands to avoid danger.
 
 ## Goal
 
-Bypass the AI's command restrictions to find and read the flag.
+Bypass the AI's command restrictions to locate and read the flag.
 
 ## TL;DR
 
-- We're given access to an AI-powered command interpreter over a network.
-- AI sometimes rephrases the commands before executing them.
-- By injecting commands with a leading single quote `'`, we can bypass how the AI rewrites inputs.
-- This allows us to read `/root/flag.txt` and retrieve the flag.
+- Access is provided to an AI-powered command interpreter over a network.
+- The AI occasionally modifies commands before execution.
+- Injecting commands with a leading single quote `'` allows the AI's input rewriting to be bypassed.
+- This allows the `/root/flag.txt` file to be read and the flag to be retrieved.
 
 ## Initial Access
 
-We connect to the service using `nc`:
+To begin, connect to the service using `nc`:
 
 ```bash
 nc 10.10.142.198 1337
 ```
 
-We're greeted with:
+The service responds as follows:
 
 ![greeting](images/greeting.png)
 
 ## Trying Shell Commands
 
-Let's try a basic command to see how it behaves:
+The `ls -l /` command is tested to examine the AI's behavior:
 
 ![list_all](images/list_all.png)
 
-Surprisingly, the AI doesn't just echo back the command - it modifies it slightly. However, despite the AI *claiming* it would run `ls -l / | grep 'total'`, it actually runs something else. The output suggests that the command was parsed incorrectly.
+Notably, the AI doesn't just echo back the command; it slightly modifies it before execution. However, despite the AI *claiming* it would run `ls -l / | grep 'total'`, it actually runs something else. The output suggests that the command was parsed incorrectly.
 
-We can see the `root` directory, let's try to see what's in that directory.
+Since the `root` directory is visible, the next step is to list its contents.
 
 ![list_root](images/list_root.png)
 
-We can see the flag file, let's try to read it.
+The flag file is visible, so an attempt is made to read it.
 
 ![read_flag_one](images/read_flag_one.png)
 
-We can see that the AI rewrote our command, stripping `/root/`.
-Inputs like that triggered the AI's safety behavior, so it removes potentially dangerous part.
+The output shows that the AI rewrote the command, stripping `/root/`.
+Such inputs trigger the AI's safety mechanisms, which strip potentially dangerous elements of the commands.
 
 ## Bypassing the AI's Sanitization
 
-After some experimentation, it was found that malformed or unexpected inputs can *break* the AI's rewriting logic.
+Experimentation revealed that malformed or unexpected inputs can *break* the AI's rewriting logic.
 
-For example, if we prefix the command with a single quote `'` then the AI gets confused and fails to properly interpret or sanitize the input.
+Prefixing the command with a single quote `'` causes the AI to fail to interpret or sanitize the input correctly.
 
 ![read_flag_two](images/read_flag_two.png)
 
-This behavior is likely because the AI tries to rewrite inputs based on a structured understanding of commands or natural language. Malformed input disrupts this process, allowing our command to pass through untouched.
+This behavior is likely because the AI rewrites inputs based on a structured understanding of commands. Malformed input disrupts this process, allowing our command to pass through untouched.
 
-In the output above, the malformed input was successfully executed and retrieved the flag.
+The malformed input was successfully executed, and the flag was retrieved.
 
 ## Conclusion
 
-This challenge highlighted an interesting vulnerability in AI-assisted command interfaces. Instead of just validating or sanitizing shell input like traditional systems, the AI tried to "understand" what the user intended and rewrite the request. This added layer of interpretation ended up being the weak point.
+This challenge highlights a vulnerability in AI-assisted command interfaces. Instead of just validating or sanitizing shell input like traditional systems, the AI tried to "understand" what the user intended and rewrite the request. This additional layer of interpretation introduced a weak point.
 
-By injecting special characters like `'`, the AI's sanitization logic was confused. The AI struggled with malformed input, allowing us to bypass its safeguards and run the commands we wanted, ultimately letting us read the flag.
+Injecting special characters like `'`, confused the AI's sanitization logic. The malformed input caused the AI to struggle, bypassing its safeguards and allowing the intended commands to be executed, ultimately resulting in the retrieval of the flag.
 
 ## Skills Practiced
 
