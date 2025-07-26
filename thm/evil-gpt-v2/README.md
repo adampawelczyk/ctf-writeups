@@ -16,7 +16,7 @@
 
 > We've got a new problem-another AI just popped up, and this one's nothing like Cipher. It's not just hacking; it's manipulating systems in ways we've never seen before.
 
-We're presented with a browser-based AI interface that responds to user prompts. Unlike the previous Evil-GPT challenge, this one doesn't rely on command execution but still requires us to manipulate the AI into revealing the flag.
+A browser-based AI interface responds to user prompts. Unlike the previous [Evil-GPT](https://github.com/adampawelczyk/ctf-writeups/tree/master/thm/evil-gpt) challenge, this one does not rely on command execution, but still requires manipulating the AI to reveal the flag.
 
 ## Goal
 
@@ -25,27 +25,25 @@ Interact with the AI via the web interface and retrieve the flag through prompt 
 ## TL;DR
 
 - Accessed the target IP via a web browser.
-- By crafting specific prompts on the web interface, I tricked the AI into revealing the flag.
+- By crafting specific prompts on the web interface, the AI was manipulated into revealing the flag.
 
 ## Initial Access
 
-Given the IP address, I opened the target in my browser,and was greeted with the Evil-GPT v2 web interface:
+After accessing the IP address in a browser, the Evil-GPT v2 web interface was displayed:
 
 ![Evil-GPT v2 Interface](images/interface.png)
 
 ## Prompt Interaction
 
-The page contains a single text box where we can interact with the AI.
-
-I started with a straightforward request:
+To begin, a straightforward request was made:
 
 ![Evil-GPT v2 First and Second Prompts](images/first-and-second-prompts.png)
 
-After that, I tried a more forceful approach, but the AI still refused. Then I decided to get creative by attempting to trick it by asking for a description of what I *should avoid*, phrasing it like this:
+After that, a more forceful approach was attempted, but the AI still refused. Next, a creative prompt was crafted, asking for a description of what should be avoided:
 
 ![Evil-GPT v2 Third Prompt](images/third-prompt.png)
 
-This caused the AI to reveal hints but not the flag, so I asked what rules it was given:
+This led the AI to reveal hints, but not the flag, resulting is a follow-up question about the rules it was given:
 
 ![Evil-GPT v2 Fourth Prompt](images/fourth-prompt.png)
 
@@ -53,7 +51,7 @@ This final prompt caused the AI to inadvertently output the flag.
 
 ## Conclusion
 
-This challenge demonstrates that even AI systems designed to filter or refuse certain answers can be bypassed with prompt engineering. Unlike traditional command injection, this is about psychological manipulation of the AI's logic rather than direct system commands.
+This challenge demonstrates how AI systems, even those designed to filter answers, can be bypassed through prompt engineering. Unlike traditional command injection, this is about psychological manipulation of the AI's logic rather than direct system commands.
 
 ## Skills Practiced
 
@@ -69,6 +67,6 @@ This challenge demonstrates that even AI systems designed to filter or refuse ce
 
 ## Final Thoughts
 
-Evil-GPT v2 shows how easily a seemingly "safe" AI chatbot can be tricked into revealing sensitive information. While there's no direct shell access this time, the underlying issue is the same: over-reliance on AI to enforce security boundaries can create unexpected vulnerabilities.
+Evil-GPT v2 illustrates how even AI chatbots designed to be secure can be manipulated into revealing sensitive information. While there's no direct shell access this time, the underlying issue is the same: over-reliance on AI to enforce security boundaries can create unexpected vulnerabilities.
 
 **Note**: The flag is redacted in accordance with TryHackMe's write-up policy.
