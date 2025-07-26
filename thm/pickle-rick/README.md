@@ -59,11 +59,11 @@ The results show two open ports:
 
 Visiting the IP in a browser shows a Rick and Morty themed homepage.
 
-![homepage](images/homepage.png)
+![Homepage](images/homepage.png)
 
 Viewing the HTML source reveals a hardcoded username:
 
-![hardcoded_username](images/hardcoded_username.png)
+![Hardcoded Username](images/hardcoded-username.png)
 
 ### Directory and File Brute-Force
 
@@ -77,7 +77,7 @@ Notable findings include:
 
 - `/login.php`: Login page (needs password)
 
-![login_page](images/login_page.png)
+![Log in Page](images/log-in-page.png)
 
 - `/robots.txt`: Contains a potential password
 - `/clue.txt`: Contains: `Look around the file system for the other ingredient.`
@@ -86,13 +86,13 @@ Notable findings include:
 
 Authentication was achieved at `/login.php` using credentials found in the page source and `robots.txt`.
 
-![logged_in](images/logged_in.png)
+![Logged in](images/logged-in.png)
 
 ## Post-Login Exploration
 
 After logging in, the "Command Panel" interface is displayed, providing command execution functionality. Accessing other tabs results in a redirect to `/denied.php`
 
-![denied_page](images/denied_page.png)
+![Denied Page](images/denied-page.png)
 
 An attempt was made to list the files in the current directory:
 
@@ -118,7 +118,7 @@ drwxrwxr-x 2 ubuntu ubuntu 4096 Feb 10  2019 assets
 
 The first ingredient is located in the `Sup3rS3cretPickl3Ingred.txt` file, but its contents cannot be viewed using `cat` or `vim` as these commands are disabled.
 
-![disabled_command](images/command_disabled.png)
+![Command Disabled](images/command-disabled.png)
 
 The `strings` command, which extracts human-readable strings from files, can be used to obtain the first ingredient:
 
