@@ -20,11 +20,9 @@ This Mr. Robot-themed challenge tasks us with compromising a virtual machine mod
 
 The virtual machine for deployment and investigation is hosted at: `10.10.202.58`
 
-
 ## Goal
 
 Locate all three hidden keys.
-
 
 ## TL;DR
 
@@ -37,7 +35,6 @@ Locate all three hidden keys.
 - The `robot` user was accessed after cracking the MD5 password and the second flag was retrieved.
 - Privileges were escalated using the `nmap` SUID binary.
 - The third flag was retrieved.
-
 
 ## Reconnaissance
 
@@ -158,7 +155,6 @@ su robot
 cat /home/robot/key-2-of-3.txt
 ```
 
-
 ## Privilege Escalation
 
 ### Check Sudo Rights
@@ -224,24 +220,23 @@ Reading the file reveals the third and final flag:
 cat /root/key-3-of-3.txt
 ```
 
-
 ## Conclusion
 
 This CTF, inspired by Mr. Robot, effectively simulated real-world exploitation techniques, with a focus on enumeration, privilege escalation, and web application exploitation. Through careful reconnaissance, crucial paths and credentials were discovered, leading to successful exploitation of the WordPress admin panel. After gaining initial access, user switching and privilege escalation were achieved using common techniques such as cracking MD5 hash and leveraging and SUID-enabled binary. Ultimately, the challenge demonstrated a comprehensive workflow from reconnaissance to privilege escalation, culminating in the retrieval of all three flags.
 
-### Skills Practiced
+## Skills Practiced
 
 - Directory and file enumeration using `gobuster`.
 - Base64 decoding and credential extraction.
 - Reverse shell creation and listener setup.
 - Privilege escalation via SUID misconfiguration.
 
-### Mitigations
+## Mitigations
 
 - Never leave sensitive credentials or base64 data in public files.
 - Avoid SUID on binaries like `nmap` that can be abused for shell access.
 
-### Final Thoughts
+## Final Thoughts
 
 This room was an excellent blend of web exploitation and privilege escalation. It’s beginner-friendly yet teaches critical real-world techniques - perfect for CTF practice and foundational pentesting skills.
 
